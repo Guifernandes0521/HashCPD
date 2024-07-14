@@ -41,23 +41,28 @@ int main() {
     }
 
     // Printing hash table
-    print_hash(hash_table, HASH_SIZE);
+    FILE * hash_result = fopen("player_hash.txt", "w");
+
+    print_hash_file(hash_table, HASH_SIZE, hash_result);
+
+    fclose(hash_result);
     
     // Consultas
     FILE * consultas_csv = fopen("consultas.csv", "r");
 
+    int search_id;
     if (consultas_csv == NULL) {
         printf("searches file not found");
         return 1;
     }
     while (fgets(buff, sizeof(buff), consultas_csv) != NULL) {
-        int search_id = atoi(buff);
+        search_id = atoi(buff);
         Player * searched_player = search(hash_table, search_id, HASH_SIZE, *hash_function);
         if (searched_player == NULL) {
-            printf("Jogador fora da lista\n");
+            // do something about the player not being in the hash
         }
         else{
-            printf("%s: %s\n", searched_player->name, searched_player->position);
+            // do something else about the player being in the hash
         }
     }
 

@@ -20,7 +20,7 @@ void delete_linked_list(Player * jogador);
 
 void delete_hash(Player ** hash_table, int size);
 
-void print_hash(Player ** hash_table, int size);
+void print_hash_file(Player ** hash_table, int size, FILE * hash_txt);
 
 Player ** create_hash_table(int size) {
      // cria vetor de ponteiros
@@ -78,22 +78,22 @@ void delete_hash(Player ** hash_table, int size) {
      free(hash_table);
 }
 
-void print_hash(Player ** hash_table, int size) {
+void print_hash_file(Player ** hash_table, int size, FILE * hash_txt) {
      for(int i = 0; i < size; i++) {
-
+          fprintf(hash_txt ,"[%d]: ",i);
           if (hash_table[i] == NULL) {
-               printf("//\n");
+               fprintf(hash_txt ,"empty\n");
           }
           else{
                Player * aux_player = hash_table[i];
                while (aux_player != NULL) {
-                    printf("%s ", aux_player->name);
+                    fprintf(hash_txt,"%s ", aux_player->name);
                     
                     if (aux_player->next != NULL) {
-                         printf("-> ");
+                         fprintf(hash_txt ,"-> ");
                     }
                     else{
-                         printf("\n");
+                         fprintf(hash_txt, "\n");
                     }
                     aux_player = aux_player->next;
                }
