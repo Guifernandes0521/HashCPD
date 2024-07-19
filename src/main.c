@@ -11,11 +11,13 @@ int main() {
 
     // looping through different hash table sizes
     for (int i = 0; i < 4; i++) {
-        int max_list_size = 0;
-        int sum_list_size = 0;
-        int hash_occupation = 0;
-        int max_miss = 0;
-        int avg_miss = 0;
+        // time variables
+        clock_t start, end;
+        double constructing_time, searching_time = 0;
+        
+        // stats variables
+        float occupied_ratio;
+        int  max_list_size, average_list_size;
         // average list size = sum_list_size / hash_occupation
 
         Player ** hash_table = create_hash_table(hash_sizes[i]);
@@ -34,6 +36,9 @@ int main() {
         // gettting rid of first line
         fgets(buff, sizeof(buff), players_csv);
 
+        // starting time count
+        start = clock();
+        // loop for constructing the hash
         while (fgets(buff, sizeof(buff), players_csv) != NULL) {
             Player *new_player = (Player *)malloc(sizeof(Player));
 
@@ -52,13 +57,19 @@ int main() {
 
             insert(hash_table, new_player, new_player->id, hash_sizes[i], *hash_function);
         }
+        // finish time count
+        end = clock();
+        // calculating time
+        constructing_time = ((double) (end - start)) / CLOCKS_PER_SEC;
         // get hash stats here
-        // max_list_size, avg_list_size, occupation, construction_time
-        
+        hash_stats(hash_table, hash_sizes[i], &occupied_ratio, &max_list_size, &average_list_size);
+
+        // print first part of stats on file
+
         // Printing hash table
         char file_name[50];
         // Using sprintf to format string similar to f-strings in Python
-        sprintf(file_name, "player_hash_%d.txt", hash_sizes[i]);
+        sprintf(file_name, "hash_stats_%d.txt", hash_sizes[i]);
 
         FILE * hash_result = fopen(file_name, "w");
 
@@ -83,23 +94,35 @@ int main() {
         }
 
         int search_id;
+        int max_testes;
         // needs to do this one time to get the stats, and other to write to the file, or it'll take too long.
         while (fgets(buff, sizeof(buff), consultas_csv) != NULL) {
+            int num_testes;
             search_id = atoi(buff);
-            // need to get search stats here ()
-            // auxiliary player struct for query
-            Player * searched_player = search(hash_table, search_id, hash_sizes[i], *hash_function);
+            //search time starts here
+            start = clock();
+            
+            Player * searched_player = search(hash_table, search_id, hash_sizes[i], &num_testes, *hash_function);
+            
+            end = clock();
+            
+            searching_time += ((double) (end - start)) / CLOCKS_PER_SEC;
+
+
             if (searched_player == NULL) {
-                printf("missed");
+                // write search on file
             }
             else{
-                printf("found");
+                // write search on file
             }
         }
-        // print searching time, searches per player, max "", avg """
+        // writes time to the file;
+    
+
 
         fclose(players_csv);
         fclose(consultas_csv);
+        fclose(search_stats);
         delete_hash(hash_table,hash_sizes[i]);
     }    
     return 0;

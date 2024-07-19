@@ -14,13 +14,15 @@ Player ** create_hash_table(int size);
 
 void insert(Player ** hash_table, Player * jogador, int key, int size, int (*hash_function)(int key, int size));
 
-Player * search(Player ** hash_table, int search_id, int size, int (*hash_function)(int key, int size));
+Player * search(Player ** hash_table, int search_id, int size, int * testes, int (*hash_function)(int key, int size));
 
 void delete_linked_list(Player * jogador);
 
 void delete_hash(Player ** hash_table, int size);
 
 void print_hash_info(Player ** hash_table, int size, FILE * hash_txt);
+
+void hash_stats (Player **hash_table, int size, float *occupied_ratio, int *max_list_size, int *average_list_size);
 
 Player ** create_hash_table(int size) {
      // cria vetor de ponteiros
@@ -53,11 +55,13 @@ void insert(Player **hash_table, Player * jogador, int key, int size, int (*hash
     }
 }
 
-Player * search(Player ** hash_table, int search_id, int size, int (*hash_function)(int key, int size)){
+Player * search(Player ** hash_table, int search_id, int size, int * testes, int (*hash_function)(int key, int size)){
      int search_index = hash_function(search_id, size);
+     *testes = 0;
      Player * current_player = hash_table[search_index];
      
      while (current_player != NULL) {
+          (*testes)++;
           if (current_player->id == search_id) {
                return current_player;
           }
@@ -107,4 +111,29 @@ void print_hash_info(Player ** hash_table, int size, FILE * hash_txt) {
                }
           }
      }
+}
+
+void hash_stats (Player **hash_table, int size, float *occupied_ratio, int *max_list_size, int *average_list_size) {
+    int occupied_buckets = 0;
+    int total_list_size = 0;
+    *max_list_size = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (hash_table[i] != NULL) {
+            occupied_buckets++;
+            int current_list_size = 0;
+            Player * aux_player = hash_table[i];
+            while (aux_player != NULL) {
+                current_list_size++;
+                aux_player = aux_player->next;
+            }
+            total_list_size += current_list_size;
+            if (current_list_size > *max_list_size) {
+                *max_list_size = current_list_size;
+            }
+        }
+    }
+
+    *occupied_ratio = ((float)occupied_buckets / size) * 100;
+    *average_list_size = occupied_buckets == 0 ? 0 : total_list_size / occupied_buckets;
 }
