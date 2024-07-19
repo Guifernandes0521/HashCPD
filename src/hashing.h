@@ -5,8 +5,8 @@
 
 typedef struct PLAYER {
      int id;
-     char name[100];
-     char position[100];
+     char *name;
+     char *position;
      struct PLAYER * next;
 } Player;
 
@@ -20,15 +20,20 @@ void delete_linked_list(Player * jogador);
 
 void delete_hash(Player ** hash_table, int size);
 
-void print_hash_file(Player ** hash_table, int size, FILE * hash_txt);
+void print_hash_info(Player ** hash_table, int size, FILE * hash_txt);
 
 Player ** create_hash_table(int size) {
      // cria vetor de ponteiros
      Player ** hash_table = (Player**)malloc((size_t)size * sizeof(Player*));
      
+     if(hash_table == NULL) {
+          return NULL;
+     }
+
      for(int i = 0; i < size; i++) {
           hash_table[i] = NULL;
      }
+
      return hash_table;
 }
 
@@ -60,7 +65,8 @@ Player * search(Player ** hash_table, int search_id, int size, int (*hash_functi
      }
      return NULL;
 }
-
+// modify this gut to also free the string allocated inside of the struct
+// maybe make this not recursive
 void delete_linked_list(Player * jogador) {
      if (jogador == NULL) {
           return;
@@ -68,6 +74,8 @@ void delete_linked_list(Player * jogador) {
      if (jogador->next != NULL) {
           delete_linked_list(jogador->next);
      }
+     free(jogador->name);
+     free(jogador->position);
      free(jogador);
 }
 
@@ -78,7 +86,7 @@ void delete_hash(Player ** hash_table, int size) {
      free(hash_table);
 }
 
-void print_hash_file(Player ** hash_table, int size, FILE * hash_txt) {
+void print_hash_info(Player ** hash_table, int size, FILE * hash_txt) {
      for(int i = 0; i < size; i++) {
           fprintf(hash_txt ,"[%d]: ",i);
           if (hash_table[i] == NULL) {
