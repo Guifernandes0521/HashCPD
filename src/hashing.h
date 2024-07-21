@@ -20,8 +20,6 @@ void delete_linked_list(Player * jogador);
 
 void delete_hash(Player ** hash_table, int size);
 
-void print_hash_info(Player ** hash_table, int size, FILE * hash_txt);
-
 void hash_stats (Player **hash_table, int size, float *occupied_ratio, int *max_list_size, int *average_list_size);
 
 Player ** create_hash_table(int size) {
@@ -90,29 +88,6 @@ void delete_hash(Player ** hash_table, int size) {
      free(hash_table);
 }
 
-void print_hash_info(Player ** hash_table, int size, FILE * hash_txt) {
-     for(int i = 0; i < size; i++) {
-          fprintf(hash_txt ,"[%d]: ",i);
-          if (hash_table[i] == NULL) {
-               fprintf(hash_txt ,"empty\n");
-          }
-          else{
-               Player * aux_player = hash_table[i];
-               while (aux_player != NULL) {
-                    fprintf(hash_txt,"%s ", aux_player->name);
-                    
-                    if (aux_player->next != NULL) {
-                         fprintf(hash_txt ,"-> ");
-                    }
-                    else{
-                         fprintf(hash_txt, "\n");
-                    }
-                    aux_player = aux_player->next;
-               }
-          }
-     }
-}
-
 void hash_stats (Player **hash_table, int size, float *occupied_ratio, int *max_list_size, int *average_list_size) {
     int occupied_buckets = 0;
     int total_list_size = 0;
@@ -134,6 +109,6 @@ void hash_stats (Player **hash_table, int size, float *occupied_ratio, int *max_
         }
     }
 
-    *occupied_ratio = ((float)occupied_buckets / size) * 100;
+    *occupied_ratio = ((float)occupied_buckets / (float)size) * 100;
     *average_list_size = occupied_buckets == 0 ? 0 : total_list_size / occupied_buckets;
 }
